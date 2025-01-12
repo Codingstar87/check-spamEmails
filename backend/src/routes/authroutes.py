@@ -10,6 +10,7 @@ router = APIRouter()
 limiter = Limiter(key_func=get_remote_address)
 
 @router.post("/register")
+@limiter.limit("3/minute")
 async def register_user(user: UserCreate, response: Response):
     return create_user(user, response)
 
@@ -22,7 +23,6 @@ async def login_user(data: UserLogin):
 
 
 @router.get("/user")
-@limiter.limit("3/minute")
 async def get_user_info(request: Request):
     return get_user_by_session(request)
 
