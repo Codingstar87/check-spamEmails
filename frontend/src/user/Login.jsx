@@ -23,13 +23,18 @@ function Login() {
             // Perform login
             await api.post('/login', formData);
 
-            // Fetch user data
+            // Fetch user data upon successful login
             const userResponse = await api.get('/user');
             setUserData(userResponse.data);
             setError('');
         } catch (err) {
-            console.error(err);
-            setError('Error: Login failed.');
+            if (err.response && err.response.data) {
+                // Extract detail from the backend error response
+                setError(err.response.data.detail || 'Error: Login failed.');
+            } else {
+                // Handle unexpected errors
+                setError('Error: Something went wrong. Please try again.');
+            }
         }
     };
 
@@ -41,6 +46,7 @@ function Login() {
                     type="email"
                     name="email"
                     placeholder="Email"
+                    value={formData.email}
                     onChange={handleChange}
                     required
                 />
@@ -48,6 +54,7 @@ function Login() {
                     type="password"
                     name="password"
                     placeholder="Password"
+                    value={formData.password}
                     onChange={handleChange}
                     required
                 />

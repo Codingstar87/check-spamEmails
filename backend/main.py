@@ -31,7 +31,7 @@ scheduler.start()
 
 @app.on_event("startup")
 async def startup_event():
-    # Fetch spam data initially
+
     fetch_spem_data()
 
 

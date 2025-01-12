@@ -22,8 +22,13 @@ function Register() {
             const response = await api.post('/register', formData);
             setMessage(response.data.message || 'User registered successfully!');
         } catch (error) {
-            console.error(error);
-            setMessage('Error: Registration failed.');
+            if (error.response && error.response.data) {
+                // Extracting detail from backend error response
+                setMessage(error.response.data.detail || 'Error: Registration failed.');
+            } else {
+                // Handling unexpected errors
+                setMessage('Error: Something went wrong. Please try again.');
+            }
         }
     };
 
@@ -35,6 +40,7 @@ function Register() {
                     type="text"
                     name="username"
                     placeholder="Username"
+                    value={formData.username}
                     onChange={handleChange}
                     required
                 />
@@ -42,6 +48,7 @@ function Register() {
                     type="email"
                     name="email"
                     placeholder="Email"
+                    value={formData.email}
                     onChange={handleChange}
                     required
                 />
@@ -49,6 +56,7 @@ function Register() {
                     type="password"
                     name="password"
                     placeholder="Password"
+                    value={formData.password}
                     onChange={handleChange}
                     required
                 />

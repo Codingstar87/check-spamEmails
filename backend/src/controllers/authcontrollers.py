@@ -53,7 +53,7 @@ def user_login(data):
    
     user = user_collection.find_one({"email": data.email})  
     if not user or not verify_password(data.password, user["password"]):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="wrong password. please check the password!")
 
    
     session_data = create_session(str(user["_id"]))
