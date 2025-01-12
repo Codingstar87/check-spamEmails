@@ -4,15 +4,15 @@ from src.models.models import UserCreate, UserLogin
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-
 router = APIRouter()
 
 limiter = Limiter(key_func=get_remote_address)
 
 @router.post("/register")
 @limiter.limit("3/minute")
-async def register_user(user: UserCreate, response: Response):
+async def register_user(request: Request, user: UserCreate, response: Response):
     return create_user(user, response)
+
 
 
 @router.post("/login")
