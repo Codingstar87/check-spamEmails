@@ -31,8 +31,8 @@ def create_user(user: UserCreate, response: Response):
 
     result = user_collection.insert_one(user_data)
 
-    session_data = create_session(str(result.inserted_id))
-    session_collection.insert_one(session_data)
+    # session_data = create_session(str(result.inserted_id))
+    # session_collection.insert_one(session_data)
 
     # Set the session token in cookies
     # response.set_cookie(
