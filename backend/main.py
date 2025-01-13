@@ -4,7 +4,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.executors.pool import ThreadPoolExecutor
 from src.routes.authroutes import router as auth_router
 from src.mails.spamEmails import fetch_spem_data
-import uvicorn
+import threading
 
 app = FastAPI()
 
@@ -20,33 +20,51 @@ app.add_middleware(
 
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 
-# please comment out this this is heavy task
-def schedule_spam_update():
+
+
+def threaded_fetch_spam_data():
     try:
-        print("Updating spam lists...")
-        fetch_spem_data()
-        print("Spam lists updated.")
+        print("Fetching spam data in a separate thread...")
+        fetch_spem_data()  
+        print("Spam data fetched successfully.")
     except Exception as e:
-        print(f"Error updating spam lists: {e}")
+        print(f"Error while fetching spam data: {e}")
+
+
+def schedule_spam_update():
+    thread = threading.Thread(target=threaded_fetch_spam_data)
+    thread.start()
+
 
 scheduler = BackgroundScheduler(
     executors={"default": ThreadPoolExecutor(1)}  
 )
 scheduler.add_job(schedule_spam_update, "interval", days=7)
-scheduler.start()
 
 @app.on_event("startup")
 async def startup_event():
+    print("Starting the application...")
+    scheduler.start()  
+    print("Scheduler started.")
     print("Fetching spam data on startup...")
-    await fetch_spem_data()  
-    print("Startup task completed.")
+    threading.Thread(target=threaded_fetch_spam_data).start()  
+    print("Startup task triggered.")
 
 @app.on_event("shutdown")
 async def shutdown_event():
     print("Shutting down scheduler...")
-    scheduler.shutdown()
+    scheduler.shutdown(wait=False)  
     print("Scheduler shut down.")
-# upto this
+
+
+@app.get("/fetch-spam-data")
+async def fetch_spam_data_manually():
+    print("Manual fetch request received.")
+    threading.Thread(target=threaded_fetch_spam_data).start()
+    return {"status": "Success", "message": "Spam data fetch triggered manually."}
+
+
+
 
 if __name__ == "__main__":
     import uvicorn
