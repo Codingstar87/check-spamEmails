@@ -20,7 +20,7 @@ app.add_middleware(
 
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 
-
+# please comment out this this is heavy task
 def schedule_spam_update():
     try:
         print("Updating spam lists...")
@@ -46,7 +46,7 @@ async def shutdown_event():
     print("Shutting down scheduler...")
     scheduler.shutdown()
     print("Scheduler shut down.")
-
+# upto this
 
 if __name__ == "__main__":
     import uvicorn
