@@ -10,7 +10,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "https://check-spamemails-2.onrender.com"],
+    allow_origins=["http://localhost:5173", "https://check-spam-emails.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
