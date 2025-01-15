@@ -12,6 +12,8 @@ function App() {
                 <Link to="/login">Login</Link>
             </nav>
             <Routes>
+                {/* Define route for root path */}
+                <Route path="/" element={<div>Welcome to the Home Page!</div>} /> {/* Add a default route for / */}
                 <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />
             </Routes>
@@ -20,5 +22,6 @@ function App() {
 }
 
 export default App;
+
 
 
