@@ -3,20 +3,17 @@
   "builds": [
     {
       "src": "package.json",
-      "use": "@vercel/node",
+      "use": "@vercel/static-build",
       "config": {
-        "zeroConfig": true
+        "distDir": "dist"
       }
     }
   ],
   "routes": [
-    {
-      "src": "/auth/(.*)",
-      "dest": "https://check-spamemails-2.onrender.com/auth/$1"
-    },
     {
       "src": "/(.*)",
       "dest": "/index.html"
     }
   ]
 }
+
