@@ -70,8 +70,8 @@ def user_login(data):
         key="session_token",
         value=session_data["session_token"],
         httponly=True,  
-        secure=False,  
-        samesite='Strict',
+        secure=True,  
+        samesite='None',
         max_age=3600,  
         expires=(datetime.utcnow() + timedelta(seconds=3600)).strftime("%a, %d %b %Y %H:%M:%S GMT")  # Cookie expiration
     )
