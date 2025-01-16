@@ -11,10 +11,8 @@
       "src": "/(.*)",
       "dest": "/$1"
     }
-  ],
-  "env": {
-    "VITE_API_URL": "https://check-spamemails-2.onrender.com"
-  }
+  ]
+  
 }
 
   
