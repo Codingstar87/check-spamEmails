@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // Axios instance with credentials and base URL
 const api = axios.create({
-    baseURL: '/auth', // Replace with backend domain for production
+    baseURL: '/auth', 
     withCredentials: true, // Ensures cookies are included in requests
 });
 
