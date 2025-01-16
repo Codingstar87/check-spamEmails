@@ -16,8 +16,8 @@ async def register_user(request: Request, user: UserCreate, response: Response):
 
 
 @router.post("/login")
-async def login_user(data: UserLogin):
-    return user_login(data)
+async def login_user(request: Request,data: UserLogin, response: Response):
+    return user_login(data,response)
 
 
 

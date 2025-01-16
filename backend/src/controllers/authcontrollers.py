@@ -5,6 +5,7 @@ from src.models.models import UserCreate
 from bson import ObjectId
 from fastapi.responses import JSONResponse
 from fastapi import Request
+from datetime import datetime, timedelta
 
 
 
@@ -51,44 +52,50 @@ def create_user(user: UserCreate, response: Response):
 
 def user_login(data):
    
-    user = user_collection.find_one({"email": data.email})  
+    user = user_collection.find_one({"email": data.email})
     if not user or not verify_password(data.password, user["password"]):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="wrong password. please check the password!")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Wrong password. Please check the password!")
 
-   
+    
     session_data = create_session(str(user["_id"]))
+    
+
     session_collection.insert_one(session_data)
 
-   
+    
     response = Response(content="Login successful")
+    
+   
     response.set_cookie(
         key="session_token",
         value=session_data["session_token"],
-        httponly=True,
-        secure=False, 
-        max_age=3600  
+        httponly=True,  
+        secure=False,  
+        samesite='Strict',
+        max_age=3600,  
+        expires=(datetime.utcnow() + timedelta(seconds=3600)).strftime("%a, %d %b %Y %H:%M:%S GMT")  # Cookie expiration
     )
+    
     return response
-
-
-
-
 
 def get_user_by_session(request: Request):
  
+
     session_token = request.cookies.get("session_token")
     if not session_token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Session token is expired")
 
+
     session = session_collection.find_one({"session_token": session_token})
     if not session:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid session")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid session token. Please log in again.")
+
 
     user = user_collection.find_one({"_id": ObjectId(session["user_id"])})
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-    
- 
+
+
     return {
         "username": user["username"],
         "email": user["email"]
