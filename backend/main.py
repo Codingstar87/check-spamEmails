@@ -26,44 +26,58 @@ app.include_router(auth_router, prefix="/auth", tags=["auth"])
 def threaded_fetch_spam_data():
     try:
         print("Fetching spam data in a separate thread...")
-        fetch_spem_data()  
+        fetch_spem_data()
         print("Spam data fetched successfully.")
     except Exception as e:
         print(f"Error while fetching spam data: {e}")
 
 
 def schedule_spam_update():
-    thread = threading.Thread(target=threaded_fetch_spam_data)
-    thread.start()
+    try:
+        print("Running scheduled spam data fetch...")
+        thread = threading.Thread(target=threaded_fetch_spam_data)
+        thread.start()
+        thread.join()  
+    except Exception as e:
+        print(f"Error in scheduled spam data fetch: {e}")
 
 
 scheduler = BackgroundScheduler(
-    executors={"default": ThreadPoolExecutor(1)}  
+    executors={"default": ThreadPoolExecutor(1)} 
 )
 scheduler.add_job(schedule_spam_update, "interval", days=7)
 
 @app.on_event("startup")
 async def startup_event():
-    print("Starting the application...")
-    scheduler.start()  
-    print("Scheduler started.")
-    print("Fetching spam data on startup...")
-    threading.Thread(target=threaded_fetch_spam_data).start()  
-    print("Startup task triggered.")
+    try:
+        print("Starting the application...")
+        if not scheduler.running: 
+            scheduler.start()
+        print("Scheduler started.")
+        print("Fetching spam data on startup...")
+        threading.Thread(target=threaded_fetch_spam_data).start()
+        print("Startup task triggered.")
+    except Exception as e:
+        print(f"Error during startup: {e}")
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    print("Shutting down scheduler...")
-    scheduler.shutdown(wait=False)  
-    print("Scheduler shut down.")
-
+    try:
+        print("Shutting down scheduler...")
+        if scheduler.running:
+            scheduler.shutdown(wait=False) 
+        print("Scheduler shut down.")
+    except Exception as e:
+        print(f"Error during shutdown: {e}")
 
 @app.get("/fetch-spam-data")
 async def fetch_spam_data_manually():
-    print("Manual fetch request received.")
-    threading.Thread(target=threaded_fetch_spam_data).start()
-    return {"status": "Success", "message": "Spam data fetch triggered manually."}
-
+    try:
+        print("Manual fetch request received.")
+        threading.Thread(target=threaded_fetch_spam_data).start()
+        return {"status": "Success", "message": "Spam data fetch triggered manually."}
+    except Exception as e:
+        return {"status": "Error", "message": f"Failed to trigger spam data fetch: {e}"}
 
 
 
